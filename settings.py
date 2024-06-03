@@ -3,7 +3,7 @@ email=""
 #App Password for your email
 password=""
 
-#Alert Settings
+#Alert Settings (True or False)
 a_tier_alerts=True
 s_tier_alerts=True
 starter_alerts=True
