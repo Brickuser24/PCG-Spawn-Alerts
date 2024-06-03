@@ -4,6 +4,7 @@ import smtplib
 import settings
 import pokemon_data
 print("Initializing" + '\n')
+last_spawn=""
 
 def Spawn_Alert(msg, to):
   user = to
@@ -35,24 +36,22 @@ while True:
   spawn_url = "https://poketwitch.bframework.de/info/events/last_spawn/"
   latest_spawn = r.get(spawn_url).json()
   latest_spawn_timestamp = latest_spawn["event_time"]
-  with open("Last_Spawn.txt", "r") as file:
-    if file.read() == latest_spawn_timestamp:
-      t.sleep(latest_spawn["next_spawn"])
-    else:
-      with open("Last_Spawn.txt", "w") as file:
-        file.write(str(latest_spawn_timestamp))
-      pokemon_id = latest_spawn["order"]
-      pokemon_url = f'https://pokeapi.co/api/v2/pokemon/{pokemon_id}/'
-      pokemon_data = r.get(pokemon_url).json()
-      typing = [type['type']['name'] for type in pokemon_data['types']]
-      if pokemon_id in pokemon:
+  if last_spawn == latest_spawn_timestamp:
+    t.sleep(latest_spawn["next_spawn"])
+  else:
+    last_spawn = latest_spawn_timestamp
+    pokemon_id = latest_spawn["order"]
+    pokemon_url = f'https://pokeapi.co/api/v2/pokemon/{pokemon_id}/'
+    pokemon_data = r.get(pokemon_url).json()
+    typing = [type['type']['name'] for type in pokemon_data['types']]
+    if pokemon_id in pokemon:
+      Alert=True
+    for type in typing:
+      if type in types:
         Alert=True
-      for type in typing:
-        if type in types:
-          Alert=True
-      if Alert is True:
-        name = pokemon_data['name'].title()
-        user=settings.email
-        Spawn_Alert(f'{name} Spawn',user)
-        print(f"Sent Alert for {name} spawn")
-      t.sleep(latest_spawn["next_spawn"])
+    if Alert is True:
+      name = pokemon_data['name'].title()
+      user=settings.email
+      Spawn_Alert(f'{name} Spawn',user)
+      print(f"Sent Alert for {name} spawn")
+    t.sleep(latest_spawn["next_spawn"])
