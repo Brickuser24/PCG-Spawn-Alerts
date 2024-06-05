@@ -37,7 +37,7 @@ while True:
   latest_spawn = r.get(spawn_url).json()
   latest_spawn_timestamp = latest_spawn["event_time"]
   if last_spawn == latest_spawn_timestamp:
-    t.sleep(latest_spawn["next_spawn"])
+    t.sleep(latest_spawn["next_spawn"]+1)
   else:
     last_spawn = latest_spawn_timestamp
     pokemon_id = latest_spawn["order"]
